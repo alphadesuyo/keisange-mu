@@ -1,0 +1,131 @@
+&lt;!DOCTYPE html&gt;
+&lt;html lang="ja"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;計算ゲーム&lt;/title&gt;
+  &lt;style&gt;
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 50px;
+    }
+    .question {
+      font-size: 24px;
+    }
+    .result {
+      font-size: 20px;
+      margin-top: 20px;
+    }
+    input[type="number"] {
+      font-size: 20px;
+      padding: 5px;
+    }
+    button {
+      font-size: 20px;
+      padding: 10px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+    .timer {
+      font-size: 30px;
+      color: red;
+      margin-top: 20px;
+    }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+  &lt;h1&gt;計算ゲーム&lt;/h1&gt;
+  &lt;div class="timer" id="timer"&gt;残り時間: 30秒&lt;/div&gt;
+  &lt;div class="question" id="question"&gt;&lt;/div&gt;
+  &lt;input type="number" id="answer" placeholder="答えを入力" /&gt;
+  &lt;button onclick="checkAnswer()"&gt;答えを確認&lt;/button&gt;
+  &lt;div class="result" id="result"&gt;&lt;/div&gt;
+
+  &lt;script&gt;
+    // 変数の初期化
+    let timeLeft = 30;
+    let currentQuestion;
+    let timerInterval;
+
+    // 計算問題をランダムに出題（足し算、引き算、掛け算）
+    function generateQuestion() {
+      const num1 = Math.floor(Math.random() * 100) + 1; // 1〜100のランダムな数字
+      const num2 = Math.floor(Math.random() * 100) + 1; // 1〜100のランダムな数字
+      const operator = Math.floor(Math.random() * 3); // 0:足し算, 1:引き算, 2:掛け算
+
+      let questionText = '';
+      let correctAnswer = 0;
+
+      if (operator === 0) {
+        // 足し算
+        questionText = `${num1} + ${num2}`;
+        correctAnswer = num1 + num2;
+      } else if (operator === 1) {
+        // 引き算
+        questionText = `${num1} - ${num2}`;
+        correctAnswer = num1 - num2;
+      } else {
+        // 掛け算
+        questionText = `${num1} × ${num2}`;
+        correctAnswer = num1 * num2;
+      }
+
+      return {
+        questionText,
+        correctAnswer
+      };
+    }
+
+    // タイマーを更新
+    function startTimer() {
+      timerInterval = setInterval(function () {
+        timeLeft--;
+        document.getElementById('timer').innerText = `残り時間: ${timeLeft}秒`;
+
+        if (timeLeft &lt;= 0) {
+          clearInterval(timerInterval);
+          document.getElementById('result').innerText = '時間切れ！ゲーム終了';
+          document.getElementById('answer').disabled = true;
+        }
+      }, 1000);
+    }
+
+    // 新しい問題を出題
+    function loadNewQuestion() {
+      currentQuestion = generateQuestion();
+      document.getElementById('question').innerText = currentQuestion.questionText;
+      document.getElementById('answer').value = '';
+      document.getElementById('result').innerText = '';
+    }
+
+    // 答えを確認
+    function checkAnswer() {
+      const userAnswer = parseInt(document.getElementById('answer').value);
+      if (userAnswer === currentQuestion.correctAnswer) {
+        document.getElementById('result').innerText = '正解！';
+      } else {
+        document.getElementById('result').innerText = '不正解。もう一度試してみてください。';
+      }
+      
+      // 次の問題を出題
+      loadNewQuestion();
+    }
+
+    // ゲームの開始
+    function startGame() {
+      timeLeft = 30;
+      document.getElementById('answer').disabled = false;
+      startTimer();
+      loadNewQuestion();
+    }
+
+    // ページ読み込み時にゲームをスタート
+    window.onload = function() {
+      startGame();
+    };
+  &lt;/script&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
